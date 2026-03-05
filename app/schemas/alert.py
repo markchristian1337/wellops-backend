@@ -20,7 +20,11 @@ class AlertStatus(str, Enum):
     ack = "ack"
     closed = "closed"
 
-
+class PaginatedAlertsOut(BaseModel):
+    items: list[AlertOut]
+    total: int
+    offset: int
+    limit: int
 class AlertOut(BaseModel):
     """
     Response schema (what the API returns).
