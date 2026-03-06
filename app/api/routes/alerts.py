@@ -31,7 +31,7 @@ def list_alerts(status: Optional[AlertStatus] = None, limit: int = 25, offset: i
     )
     return {
         'items': alerts,
-        'total': 1,
+        'total': total,
         'offset': offset,
         'limit': limit
     }
