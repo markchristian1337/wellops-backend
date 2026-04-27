@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import FastAPI
 from app.api.routes import wells, alerts
+from app.api.routes.sensors import temperatures
 
 app = FastAPI(title="WellOps Console API", version="0.1.0")
 
@@ -10,3 +11,4 @@ def health():
 
 app.include_router(wells.router)
 app.include_router(alerts.router)
+app.include_router(temperatures.router)
