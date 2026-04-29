@@ -2,10 +2,14 @@ import time, requests, random
 from datetime import datetime, timezone
 
 SENSORS = [
-    {"sensor_id": "SENSOR-005", "location": "Houston"},
-    {"sensor_id": "SENSOR-006", "location": "Anchorage"},
-    {"sensor_id": "SENSOR-007", "location": "Costa Rica"},
-    {"sensor_id": "SENSOR-008", "location": "Mexico"},
+    {"sensor_id": "SENSOR-001", "location": "Tank A"},
+    {"sensor_id": "SENSOR-002", "location": "Tank B"},
+    {"sensor_id": "SENSOR-003", "location": "Wellhead 3"},
+    {"sensor_id": "SENSOR-004", "location": "Compressor Station"},
+    # {"sensor_id": "SENSOR-005", "location": "Houston"},
+    # {"sensor_id": "SENSOR-006", "location": "Anchorage"},
+    # {"sensor_id": "SENSOR-007", "location": "Costa Rica"},
+    # {"sensor_id": "SENSOR-008", "location": "Mexico"},
 ]
 
 BASE_TEMPS = {s["sensor_id"]: random.uniform(85, 105) for s in SENSORS}
