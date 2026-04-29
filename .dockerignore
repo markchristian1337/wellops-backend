@@ -1,0 +1,45 @@
+# Python
+
+**pycache**/
+_.pyc
+_.pyo
+_.pyd
+.Python
+_.egg-info/
+dist/
+build/
+
+# Virtual environment — critical, never copy this into the image
+
+.venv/
+venv/
+env/
+
+# Environment files — never copy secrets into an image
+
+.env
+.env.\*
+
+# Database files — container should connect to external DB
+
+_.db
+_.sqlite3
+
+# Development and IDE
+
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# OS
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+\*.log
+logs/
+
+scripts/
