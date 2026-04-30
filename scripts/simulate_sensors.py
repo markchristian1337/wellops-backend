@@ -29,7 +29,7 @@ while True:
 
         try:
             response = requests.post(
-                "http://localhost:8000/sensors/temperatures",
+                "http://localhost:8000/api/sensors/temperatures",
                 json=data
             )
             response.raise_for_status()
