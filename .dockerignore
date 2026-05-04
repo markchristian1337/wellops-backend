@@ -42,4 +42,4 @@ Thumbs.db
 \*.log
 logs/
 
-scripts/
+scripts/create_tables.py
