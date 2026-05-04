@@ -21,3 +21,5 @@ class Temperature(Base):
 
     raw_payload = Column(String, nullable=False)
 
+    avg_value = Column(Float, nullable=False)
+
