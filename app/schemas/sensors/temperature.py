@@ -33,6 +33,8 @@ class TemperatureOut(BaseModel):
 
     raw_payload: Optional[str] = None
 
+    avg_value: Optional[float] = None
+
     model_config = ConfigDict(from_attributes=True)
 
 
