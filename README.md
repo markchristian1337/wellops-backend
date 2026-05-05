@@ -2,6 +2,12 @@
 
 A FastAPI backend for an internal "Well Operations Console" modeled on oil & gas field operations. Supervisors view wells and ranked equipment alerts, acknowledge or close them, and see live sensor temperature readings. Built as a personal project to demonstrate production-grade engineering across the full stack: API design, validation, deployment to Azure Kubernetes Service, secret management via Key Vault, and time-series sensor data in PostgreSQL.
 
+## Live Demo
+
+[▶ WellOps — Live Azure Deployment Demo](https://www.loom.com/share/11a94f1bc0aa4cc39a60dee1ba846b50)
+
+Demonstrates: AKS deployment, RabbitMQ pipeline (simulator → worker → Postgres), rolling average pre-computation, Grafana live dashboard, public API endpoint.
+
 > **Note:** The AKS cluster, Azure Postgres, and ACR have been scaled down to avoid charges during my job search. The deployment is fully reproducible from the manifests in [wellops-infra](https://github.com/markchristian1337/wellops-infra). Happy to redeploy on request — typically takes 15 minutes.
 
 ## Stack
