@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.deps import get_db
 from app.schemas.sensors.temperature import TemperatureOut, TemperatureCreate, SensorSummaryOut
-from app.services.sensors.temperature import create_reading, fetch_latest, fetch_history, fetch_range, fetch_summary
+from app.services.sensors.temperature import create_reading, fetch_latest, fetch_history, fetch_range, fetch_summary, fetch_summaries
 from typing import List, Optional
 from datetime import datetime
 
@@ -27,3 +27,7 @@ def get_range(from_dt: datetime, to_dt: datetime, sensor_id: Optional[str] = Non
 @router.get("/summary", response_model=SensorSummaryOut, status_code=200)
 def get_summary(sensor_id: str, count: Optional[int] = 100, db: Session = Depends(get_db)):
     return fetch_summary(db, sensor_id, count)
+
+@router.get("/summaries", response_model=List[SensorSummaryOut], status_code=200)
+def get_summaries(count: Optional[int] = 100, db: Session = Depends(get_db)):
+    return fetch_summaries(db, count)
