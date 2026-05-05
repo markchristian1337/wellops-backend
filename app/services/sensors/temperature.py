@@ -1,9 +1,11 @@
 from sqlalchemy import func
 from app.models.sensors.temperature import Temperature
-from app.schemas.sensors.temperature import TemperatureCreate
+from app.schemas.sensors.temperature import TemperatureCreate, SensorSummaryOut
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from typing import Optional
+from pandas import DataFrame
+from fastapi import HTTPException
 
 def create_reading(temperature_in, db):
     # sensor = db.query(sensor).filter(sensor.id == temperature_in.sensor_id).first()
@@ -53,3 +55,28 @@ def fetch_range(db: Session, from_dt: datetime, to_dt: datetime, sensor_id: Opti
         q = q.filter(Temperature.sensor_id == sensor_id)
     q = q.order_by(Temperature.recorded_at.desc())
     return q.all()
+
+def fetch_summary(db: Session, sensor_id: str, count: Optional[int] = 100) -> SensorSummaryOut:
+    data = fetch_history(db, sensor_id, count)
+    df = DataFrame([{
+            "sensor_id": r.sensor_id,
+            "value": r.value
+        } for r in data])
+    if df.empty:
+        raise HTTPException(status_code=404, detail=f"No readings found for sensor {sensor_id}")
+    mean_val = round(float(df['value'].mean()), 4)
+    std_val = round(float(df['value'].std()), 4)
+    min_val = round(float(df['value'].min()), 4)
+    max_val = round(float(df['value'].max()), 4)
+    now = datetime.now(timezone.utc)
+    summary = SensorSummaryOut(
+        sensor_id = sensor_id,
+        mean = mean_val,
+        std = std_val,
+        min = min_val ,
+        max = max_val,
+        count=count or 100,
+        calculated_at=now
+    )
+    # print(df)
+    return summary

@@ -37,4 +37,21 @@ class TemperatureOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class SensorSummaryOut(BaseModel):
+
+    sensor_id: str
+
+    mean: float
+
+    std: Optional[float] = None
+
+    min: float
+
+    max: float
+
+    count: int
+
+    calculated_at: datetime
+
+
 
