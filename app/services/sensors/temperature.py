@@ -14,7 +14,6 @@ def create_reading(temperature_in, db):
     raw = temperature_in.model_dump_json()
     temperature = Temperature(**temperature_in.model_dump(mode="json"))
 
-    temperature.ingested_at = now
     temperature.raw_payload = raw
 
     db.add(temperature)
