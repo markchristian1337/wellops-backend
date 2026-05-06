@@ -7,7 +7,7 @@ from typing import Optional
 from pandas import DataFrame
 from fastapi import HTTPException
 from sqlalchemy import text
-from sqlalchemy.engine import Row
+from app.core.decorators import log_execution_time
 
 
 def create_reading(temperature_in, db):
@@ -119,6 +119,7 @@ def fetch_last_n_per_sensor(db: Session, n: Optional[int] = 100) -> list:
     return list(result.fetchall())
 
 
+@log_execution_time
 def fetch_summaries(db: Session, count: Optional[int] = 100) -> list[SensorSummaryOut]:
     data = fetch_last_n_per_sensor(db, n=count)
     df = DataFrame([{"sensor_id": r.sensor_id, "value": r.value} for r in data])
@@ -126,7 +127,6 @@ def fetch_summaries(db: Session, count: Optional[int] = 100) -> list[SensorSumma
         return []
     now = datetime.now(timezone.utc)
     stats = df.groupby("sensor_id")["value"].agg(["mean", "std", "min", "max", "count"])
-    print(stats)
     stats = stats.reset_index()
     records = stats.to_dict("records")
     summaries = [
