@@ -7,8 +7,10 @@ from app.models.sensors.temperature import Temperature
 import os
 from datetime import datetime, timezone
 
-QUEUE_NAME = os.getenv("RABBITMQ_QUEUE_NAME", "sensor.readings")
+QUEUE_NAME = os.getenv("RABBITMQ_QUEUE_NAME", "temp.workers")
 WINDOW_SIZE = 10
+EXCHANGE_NAME = os.getenv("RABBITMQ_EXCHANGE_NAME", "sensor.readings")
+
 
 def get_rolling_average(db: Session, sensor_id: str) -> float:
     # fetch last WINDOW_SIZE readings for this sensor ordered by recorded_at desc
@@ -16,7 +18,8 @@ def get_rolling_average(db: Session, sensor_id: str) -> float:
         db.query(Temperature)
         .filter(Temperature.sensor_id == sensor_id)
         .order_by(Temperature.recorded_at.desc())
-        .limit(WINDOW_SIZE).all()
+        .limit(WINDOW_SIZE)
+        .all()
     )
     # extract the value column into a pandas Series
     s = pd.Series([r.value for r in q])
@@ -56,6 +59,7 @@ def process_message(ch, method, properties, body):
     finally:
         db.close()
 
+
 def start_worker():
     rabbitmq_user = os.getenv("RABBITMQ_DEFAULT_USER")
     rabbitmq_pass = os.getenv("RABBITMQ_DEFAULT_PASS")
@@ -64,24 +68,30 @@ def start_worker():
         raise ValueError("RABBITMQ_DEFAULT_USER and RABBITMQ_DEFAULT_PASS must be set")
 
     # create a pika BlockingConnection
-    credentials = pika.PlainCredentials(
-        username=rabbitmq_user,
-        password=rabbitmq_pass
-    )
+    credentials = pika.PlainCredentials(username=rabbitmq_user, password=rabbitmq_pass)
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
-            host=os.getenv("RABBITMQ_HOST", "rabbitmq-service"),
-            credentials=credentials
-            )
+            host=os.getenv("RABBITMQ_HOST", "rabbitmq-service"), credentials=credentials
+        )
     )
     # open a channel
     channel = connection.channel()
+    channel.exchange_declare(
+        exchange=EXCHANGE_NAME,
+        exchange_type="topic",
+        durable=True,
+    )
     # declare the queue as durable
     channel.queue_declare(queue=QUEUE_NAME, durable=True)
+    channel.queue_bind(
+        queue=QUEUE_NAME, exchange=EXCHANGE_NAME, routing_key="temperature.*"
+    )
     # set basic_qos prefetch_count=1
     channel.basic_qos(prefetch_count=1)
     # set up basic_consume pointing at process_message, auto_ack=False
-    channel.basic_consume(queue=QUEUE_NAME, on_message_callback=process_message, auto_ack=False)
+    channel.basic_consume(
+        queue=QUEUE_NAME, on_message_callback=process_message, auto_ack=False
+    )
     # start consuming
     channel.start_consuming()
 
